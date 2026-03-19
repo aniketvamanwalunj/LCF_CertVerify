@@ -70,13 +70,20 @@ html, body{
     color:#555;
 }
 
-/* ✅ NEW TEXT STYLE */
+/* MISSION */
 .mission{
     font-size:13px;
     color:#444;
     margin-top:12px;
     line-height:1.6;
     max-width:420px;
+}
+
+/* STATES */
+.states{
+    margin-top:10px;
+    font-size:13px;
+    color:#000;
 }
 
 /* RIGHT */
@@ -203,7 +210,6 @@ button{
     font-size:14px;
 }
 
-/* ISSUED */
 .issued{
     margin-top:10px;
     font-size:13px;
@@ -304,13 +310,6 @@ function showLoading(){
 function onlyNumbers(input){
     input.value = input.value.replace(/[^0-9]/g,'');
 }
-
-window.onload = function(){
-    const overlay = document.querySelector('.overlay');
-    if(overlay){
-        document.body.style.overflow="hidden";
-    }
-}
 </script>
 
 </head>
@@ -328,9 +327,13 @@ window.onload = function(){
         <div class="brand">Verify Certificates Instantly</div>
         <div class="tagline">Check authenticity using certificate ID.</div>
 
-        <!-- ✅ ADDED CONTENT -->
         <div class="mission">
             Lighthouse Communities Foundation (LCF) is on a mission to build empowered communities through life-skills, employment and entrepreneurship opportunities for a million disadvantaged youth across India.
+        </div>
+
+        <!-- ✅ ADDED STATES -->
+        <div class="states">
+            Maharashtra | Delhi | Odisha | Telangana | Uttar Pradesh
         </div>
     </div>
 
