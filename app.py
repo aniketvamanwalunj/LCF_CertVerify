@@ -5,20 +5,24 @@ import re
 
 app = Flask(__name__)
 
-# 🔒 Secret key
+# Secret key (use env var in production)
 app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key")
 
-# Google Sheet CSV Link
+# Google Sheet CSV Link (must be public/exportable as CSV)
 DATA_URL = "https://docs.google.com/spreadsheets/d/1bmPVm-Ur4mqK9l-TJ7Za3vEd6b9wNVkeUo8-n7LHUKI/export?format=csv"
 
+
 def load_data():
+    """Load data from Google Sheets CSV."""
     try:
         df = pd.read_csv(DATA_URL)
+        # Normalize certificate_id column
         df["certificate_id"] = df["certificate_id"].astype(str).str.upper().str.strip()
         return df
     except Exception as e:
         print("Error loading data:", e)
         return pd.DataFrame()
+
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -27,11 +31,11 @@ def index():
     if request.method == "POST":
         user_input = request.form.get("certificate_id", "").strip()
 
-        # ✅ Allow only numbers
-        numbers_only = re.sub(r'[^0-9]', '', user_input)
+        # Allow only numbers
+        numbers_only = re.sub(r"[^0-9]", "", user_input)
 
         if numbers_only:
-            # ✅ Add LCF prefix automatically
+            # Add LCF prefix automatically
             cert_id = "LCF" + numbers_only
 
             df = load_data()
@@ -44,6 +48,7 @@ def index():
                 else:
                     result = "NOT FOUND"
             else:
+                # Could not load data
                 result = "ERROR"
         else:
             result = "NOT FOUND"
@@ -51,7 +56,6 @@ def index():
     return render_template("index.html", result=result)
 
 
-# ✅ Production run
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
