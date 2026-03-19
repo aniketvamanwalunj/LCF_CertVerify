@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request
 import pandas as pd
 import os
+import re
 
 app = Flask(__name__)
 
-# 🔒 Secret key for security (required in production)
+# 🔒 Secret key
 app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key")
 
 # Google Sheet CSV Link
@@ -22,24 +23,33 @@ def load_data():
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = None
-    
+
     if request.method == "POST":
-        cert_id = request.form.get("certificate_id", "").upper().strip()
-        
-        if cert_id:
+        user_input = request.form.get("certificate_id", "").strip()
+
+        # ✅ Allow only numbers
+        numbers_only = re.sub(r'[^0-9]', '', user_input)
+
+        if numbers_only:
+            # ✅ Add LCF prefix automatically
+            cert_id = "LCF" + numbers_only
+
             df = load_data()
-            
+
             if not df.empty:
                 record = df[df["certificate_id"] == cert_id]
-                
+
                 if not record.empty:
                     result = record.iloc[0].to_dict()
                 else:
                     result = "NOT FOUND"
             else:
                 result = "ERROR"
-    
+        else:
+            result = "NOT FOUND"
+
     return render_template("index.html", result=result)
+
 
 # ✅ Production run
 if __name__ == "__main__":
