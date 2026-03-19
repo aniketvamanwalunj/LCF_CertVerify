@@ -45,7 +45,7 @@ html, body{
 /* LEFT */
 .left{
     width:45%;
-    background:white; /* ✅ FIXED (was grey) */
+    background:white;
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -68,6 +68,15 @@ html, body{
 .tagline{
     font-size:15px;
     color:#555;
+}
+
+/* ✅ NEW TEXT STYLE */
+.mission{
+    font-size:13px;
+    color:#444;
+    margin-top:12px;
+    line-height:1.6;
+    max-width:420px;
 }
 
 /* RIGHT */
@@ -201,7 +210,7 @@ button{
     color:#555;
 }
 
-/* ✅ CLOSE BUTTON FIXED */
+/* CLOSE BUTTON */
 .close{
     margin-top:20px;
     cursor:pointer;
@@ -318,6 +327,11 @@ window.onload = function(){
         <img src="{{ url_for('static', filename='lcf.jpg') }}">
         <div class="brand">Verify Certificates Instantly</div>
         <div class="tagline">Check authenticity using certificate ID.</div>
+
+        <!-- ✅ ADDED CONTENT -->
+        <div class="mission">
+            Lighthouse Communities Foundation (LCF) is on a mission to build empowered communities through life-skills, employment and entrepreneurship opportunities for a million disadvantaged youth across India.
+        </div>
     </div>
 
     <div class="right">
