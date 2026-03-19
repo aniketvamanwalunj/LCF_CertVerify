@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>LCF CertVerify</title>
 
@@ -15,9 +16,17 @@
     padding:0;
     box-sizing:border-box;
     font-family:'Poppins', sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
-body{}
+*::selection{
+    background: transparent !important;
+}
+
+html, body{
+    height:100%;
+    overflow:hidden;
+}
 
 /* NAVBAR */
 .navbar{
@@ -36,7 +45,7 @@ body{}
 /* LEFT */
 .left{
     width:45%;
-    background:#f8fafc;
+    background:white; /* ✅ FIXED (was grey) */
     display:flex;
     flex-direction:column;
     justify-content:center;
@@ -71,7 +80,6 @@ body{}
 
 /* CARD */
 .card{
-    position:relative;
     width:100%;
     max-width:420px;
     background:white;
@@ -80,14 +88,31 @@ body{}
 }
 
 /* INPUT */
-input{
-    width:100%;
-    padding:13px;
-    border-radius:8px;
+.input-group{
+    display:flex;
+    align-items:center;
     border:1px solid #ccc;
+    border-radius:8px;
+    overflow:hidden;
     margin-bottom:12px;
 }
 
+.prefix{
+    background:#e2e8f0;
+    padding:13px;
+    font-weight:600;
+    color:#1e3c72;
+}
+
+.input-group input{
+    border:none;
+    outline:none;
+    padding:13px;
+    width:100%;
+    font-size:16px;
+}
+
+/* BUTTON */
 button{
     width:100%;
     padding:13px;
@@ -127,11 +152,13 @@ button{
     left:0;
     width:100%;
     height:100%;
-    background:rgba(0,0,0,0.5);
+    background:rgba(255,255,255,0.9);
+    backdrop-filter: blur(4px);
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:10px;
+    padding:15px;
+    z-index:9999;
 }
 
 /* POPUP */
@@ -142,15 +169,14 @@ button{
     background:white;
     border-radius:14px;
     text-align:center;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
-/* ICON */
 .icon{
     width:70px;
     margin-bottom:10px;
 }
 
-/* TEXT */
 .success{
     color:#16a34a;
     font-weight:600;
@@ -168,11 +194,24 @@ button{
     font-size:14px;
 }
 
-/* CLOSE */
-.close{
-    margin-top:15px;
-    cursor:pointer;
+/* ISSUED */
+.issued{
+    margin-top:10px;
+    font-size:13px;
     color:#555;
+}
+
+/* ✅ CLOSE BUTTON FIXED */
+.close{
+    margin-top:20px;
+    cursor:pointer;
+    color:white;
+    background:#1e3c72;
+    padding:12px;
+    border-radius:8px;
+    font-weight:500;
+    width:100%;
+    text-align:center;
 }
 
 /* FOOTER */
@@ -186,6 +225,7 @@ button{
     font-size:14px;
     line-height:1.6;
     position:relative;
+    user-select:none;
 }
 
 /* HELP BUTTON */
@@ -225,36 +265,15 @@ button{
     text-align:center;
 }
 
-.contact-info{
-    margin-top:10px;
-    line-height:1.8;
-    font-size:14px;
-}
-
-.contact-info a{
-    color:#1e3c72;
-    text-decoration:none;
-    font-weight:500;
-}
-
-.contact-info a:hover{
-    text-decoration:underline;
-}
-
 /* MOBILE */
 @media(max-width:768px){
     .main{
         flex-direction:column;
-        height:auto;
+        height:calc(100vh - 110px);
     }
 
     .left, .right{
         width:100%;
-    }
-
-    .popup{
-        max-width:90%;
-        padding:20px;
     }
 }
 </style>
@@ -266,8 +285,22 @@ function openSupport(){
 function closeSupport(){
     document.getElementById("supportModal").style.display="none";
 }
+
 function showLoading(){
     document.getElementById("loadingBox").style.display="block";
+    document.activeElement.blur();
+    window.getSelection().removeAllRanges();
+}
+
+function onlyNumbers(input){
+    input.value = input.value.replace(/[^0-9]/g,'');
+}
+
+window.onload = function(){
+    const overlay = document.querySelector('.overlay');
+    if(overlay){
+        document.body.style.overflow="hidden";
+    }
 }
 </script>
 
@@ -291,7 +324,16 @@ function showLoading(){
         <div class="card">
 
             <form method="POST" onsubmit="showLoading()">
-                <input type="text" name="certificate_id" placeholder="Enter Certificate ID (e.g. LCF032601)" required>
+
+                <div class="input-group">
+                    <div class="prefix">LCF</div>
+                    <input type="text"
+                           name="certificate_id"
+                           placeholder="Enter Numbers (e.g. 032601)"
+                           oninput="onlyNumbers(this)"
+                           required>
+                </div>
+
                 <button type="submit">Verify Certificate</button>
             </form>
 
@@ -322,6 +364,9 @@ function showLoading(){
                         <p><b>Grade:</b> {{ result.grade }}</p>
                         <p><b>Date:</b> {{ result.date }}</p>
                         <p><b>Place:</b> {{ result.place }}</p>
+
+                        <p class="issued"><b>Issued by:</b> Lighthouse Communities Foundation</p>
+
                     {% endif %}
 
                     <div class="close" onclick="window.location.href='/'">Close</div>
@@ -346,30 +391,18 @@ function showLoading(){
 <div id="supportModal" class="support-modal">
     <div class="support-box">
 
-        <strong>Support</strong>
+<strong>Support</strong>
 
-        <p>For any query, suggestion, or feedback</p>
+<p>For any query, suggestion, or feedback</p>
 
-        <p class="contact-info">
+<p class="contact-info">
+<i class="fa-solid fa-envelope"></i> aniketvamanwalunj@gmail.com<br>
+<i class="fa-brands fa-linkedin"></i>
+<a href="https://www.linkedin.com/in/aniketwalunj" target="_blank">Aniket Walunj</a><br>
+<i class="fa-solid fa-phone"></i> 9112990772
+</p>
 
-            <i class="fa-solid fa-envelope"></i>
-            <a href="mailto:aniketvamanwalunj@gmail.com">
-                aniketvamanwalunj@gmail.com
-            </a><br>
-
-            <i class="fa-brands fa-linkedin"></i>
-            <a href="https://www.linkedin.com/in/aniketwalunj" target="_blank">
-                Aniket Walunj
-            </a><br>
-
-            <i class="fa-solid fa-phone"></i>
-            <a href="tel:+919112990772">
-                9112990772
-            </a>
-
-        </p>
-
-        <div class="close" onclick="closeSupport()">Close</div>
+<div class="close" onclick="closeSupport()">Close</div>
     </div>
 </div>
 
